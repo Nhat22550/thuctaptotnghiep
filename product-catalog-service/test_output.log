@@ -1,0 +1,197 @@
+Found "d:\web2\e-commerce-microservices-master\product-catalog-service\.mvn\wrapper\maven-wrapper.jar"
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------< com.rainbowforest:product-catalog-service >--------------
+[INFO] Building product-catalog-service 0.0.1-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.3.2:clean (default-clean) @ product-catalog-service ---
+[INFO] Deleting d:\web2\e-commerce-microservices-master\product-catalog-service\target
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ product-catalog-service ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ product-catalog-service ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 8 source files with javac [debug release 17] to target\classes
+[INFO] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/main/java/com/rainbowforest/productcatalogservice/service/ProductServiceImpl.java: d:\web2\e-commerce-microservices-master\product-catalog-service\src\main\java\com\rainbowforest\productcatalogservice\service\ProductServiceImpl.java uses or overrides a deprecated API.
+[INFO] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/main/java/com/rainbowforest/productcatalogservice/service/ProductServiceImpl.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ product-catalog-service ---
+[INFO] skip non existing resourceDirectory d:\web2\e-commerce-microservices-master\product-catalog-service\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ product-catalog-service ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 4 source files with javac [debug release 17] to target\test-classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[5,17] cannot find symbol
+  symbol:   class Before
+  location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[7,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[18,24] cannot find symbol
+  symbol:   class Assert
+  location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[20,2] cannot find symbol
+  symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[6,1] package org.junit does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[3,17] cannot find symbol
+  symbol:   class Test
+  location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[4,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[8,2] cannot find symbol
+  symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[12,17] cannot find symbol
+  symbol:   class Test
+  location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[13,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[27,2] cannot find symbol
+  symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[4,17] cannot find symbol
+  symbol:   class Before
+  location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[5,17] cannot find symbol
+  symbol:   class Test
+  location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[6,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[21,2] cannot find symbol
+  symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[37,6] cannot find symbol
+  symbol:   class Before
+  location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[47,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[63,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[77,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[92,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[12,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.ProductCatalogServiceApplicationTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[41,10] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.AdminProductControllerTest
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[67,10] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.AdminProductControllerTest
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[38,6] cannot find symbol
+  symbol:   class Before
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[49,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[65,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[84,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[100,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[117,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[134,6] cannot find symbol
+  symbol:   class Test
+  location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[INFO] 30 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.550 s
+[INFO] Finished at: 2026-03-18T13:08:43+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:testCompile (default-testCompile) on project product-catalog-service: Compilation failure: Compilation failure: 
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[5,17] cannot find symbol
+[ERROR]   symbol:   class Before
+[ERROR]   location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[7,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[18,24] cannot find symbol
+[ERROR]   symbol:   class Assert
+[ERROR]   location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[20,2] cannot find symbol
+[ERROR]   symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[6,1] package org.junit does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[3,17] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[4,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[8,2] cannot find symbol
+[ERROR]   symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[12,17] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[13,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[27,2] cannot find symbol
+[ERROR]   symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[4,17] cannot find symbol
+[ERROR]   symbol:   class Before
+[ERROR]   location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[5,17] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: package org.junit
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[6,24] package org.junit.runner does not exist
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[21,2] cannot find symbol
+[ERROR]   symbol: class RunWith
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[37,6] cannot find symbol
+[ERROR]   symbol:   class Before
+[ERROR]   location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[47,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[63,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[77,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/service/ProductServiceTests.java:[92,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.service.ProductServiceTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/ProductCatalogServiceApplicationTests.java:[12,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.ProductCatalogServiceApplicationTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[41,10] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.AdminProductControllerTest
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/AdminProductControllerTest.java:[67,10] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.AdminProductControllerTest
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[38,6] cannot find symbol
+[ERROR]   symbol:   class Before
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[49,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[65,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[84,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[100,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[117,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] /d:/web2/e-commerce-microservices-master/product-catalog-service/src/test/java/com/rainbowforest/productcatalogservice/controller/ProductControllerTests.java:[134,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.rainbowforest.productcatalogservice.controller.ProductControllerTests
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

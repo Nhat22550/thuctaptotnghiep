@@ -1,0 +1,105 @@
+server:
+  port: 8900
+
+spring:
+  application:
+    name: api-gateway
+  session:
+    store-type: redis
+    redis:
+      namespace: session
+      flush-mode: on-save
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/accounts/**
+          filters:
+            - StripPrefix=2
+        - id: product-catalog-service
+          uri: lb://product-catalog-service
+          predicates:
+            - Path=/api/catalog/**
+          filters:
+            - StripPrefix=2
+        - id: product-route
+          uri: lb://product-catalog-service
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - StripPrefix=1
+        - id: category-route
+          uri: lb://product-catalog-service
+          predicates:
+            - Path=/api/categories/**
+          filters:
+            - StripPrefix=1
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/shop/**
+          filters:
+            - StripPrefix=2
+        - id: product-recommendation-service
+          uri: lb://product-recommendation-service
+          predicates:
+            - Path=/api/review/**
+          filters:
+            - StripPrefix=2
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payment/**
+          filters:
+            - StripPrefix=2
+        - id: react-user-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+
+        - id: react-order-route
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+
+        - id: react-payment-route
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=1
+        - id: react-auth-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+
+        # ─── BANNER ROUTES ────────────────────────────────
+        - id: banner-route
+          uri: lb://product-catalog-service
+          predicates:
+            - Path=/api/banners/**
+          filters:
+            - StripPrefix=1
+
+        # ─── UPLOADS (static files) ──────────────────────
+        - id: uploads-route
+          uri: lb://product-catalog-service
+          predicates:
+            - Path=/uploads/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

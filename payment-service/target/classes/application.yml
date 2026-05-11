@@ -1,0 +1,29 @@
+server:
+  port: 8814
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/payment_service_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: ""
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+# ─── VNPAY Sandbox Configuration ───
+vnpay:
+  tmn-code: EATLZ152
+  hash-secret: CRJQFDK0VO8RWS7OE1R2ZB5FHSE78SB6
+  url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return-url: http://localhost:5173/payment/return
+  api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
