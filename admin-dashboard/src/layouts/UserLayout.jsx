@@ -4,6 +4,7 @@ import { ShoppingCart, Search, User, Zap, Menu, X, Moon, Sun, ChevronDown, LogOu
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProducts } from '../services/productService'; // Add this
+import ChatBox from '../components/ChatBox';
 
 const UserLayout = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -437,6 +438,9 @@ const UserLayout = () => {
           </div>
         </div>
       </footer>
+
+      {/* ═══ CHATBOT UI ═══ */}
+      <ChatBox />
     </div>
   );
 };
