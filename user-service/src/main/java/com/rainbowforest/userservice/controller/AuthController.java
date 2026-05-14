@@ -19,6 +19,9 @@ import com.rainbowforest.userservice.service.EmailService;
 import com.rainbowforest.userservice.security.JwtTokenProvider;
 import com.rainbowforest.userservice.entity.UserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.rainbowforest.userservice.service.OtpService;
+import com.rainbowforest.userservice.repository.UserRoleRepository;
+import com.rainbowforest.userservice.entity.UserRole;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,6 +38,85 @@ public class AuthController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private OtpService otpService;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<Map<String, String>> sendOtp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        Map<String, String> response = new HashMap<>();
+
+        if (email == null || email.isEmpty()) {
+            response.put("message", "Email là bắt buộc");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        String otpCode = otpService.generateAndSaveOtp(email);
+        emailService.sendOtpEmail(email, otpCode);
+
+        response.put("message", "Đã gửi mã OTP qua email");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Map<String, Object>> verifyOtp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String otp = payload.get("otp");
+        Map<String, Object> response = new HashMap<>();
+
+        if (email == null || otp == null || email.isEmpty() || otp.isEmpty()) {
+            response.put("message", "Email và mã OTP là bắt buộc");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        boolean isValid = otpService.verifyAndDeleteOtp(email, otp);
+        if (!isValid) {
+            response.put("message", "Mã OTP không hợp lệ hoặc đã hết hạn");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // OTP is valid. Check if user exists.
+        User user = userRepository.findByUserDetailsEmail(email);
+        if (user == null) {
+            user = userRepository.findByUserName(email);
+        }
+
+        if (user == null) {
+            // Create new user
+            user = new User();
+            user.setUserName(email);
+            // Generate a random strong password
+            String randomRawPassword = UUID.randomUUID().toString() + "A1!";
+            String hashedPassword = BCrypt.hashpw(randomRawPassword, BCrypt.gensalt());
+            user.setUserPassword(hashedPassword);
+            user.setActive(1);
+
+            UserDetails userDetails = new UserDetails();
+            userDetails.setEmail(email);
+            user.setUserDetails(userDetails);
+
+            UserRole role = userRoleRepository.findUserRoleByRoleName("USER");
+            if (role != null) {
+                user.setRole(role);
+            }
+            userRepository.save(user);
+        }
+
+        // Generate JWT token
+        String token = jwtTokenProvider.generateToken(user);
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "USER";
+        
+        response.put("token", token);
+        response.put("role", roleName.toUpperCase());
+        response.put("username", user.getUserName());
+        response.put("message", "Đăng nhập thành công");
+        
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> payload) {

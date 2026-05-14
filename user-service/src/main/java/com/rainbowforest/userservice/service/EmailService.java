@@ -55,4 +55,33 @@ public class EmailService {
             System.err.println("Failed to send email: " + ex.getMessage());
         }
     }
+
+    public void sendOtpEmail(String toEmail, String otp) {
+        Email from = new Email(fromEmail);
+        String subject = "Mã OTP Đăng Nhập - NHẬT EV";
+        Email to = new Email(toEmail);
+        
+        String htmlContent = "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; border-radius: 8px;\">"
+                + "<h2 style=\"color: #111827; text-align: center;\">Mã OTP Đăng Nhập</h2>"
+                + "<p style=\"color: #374151; font-size: 16px;\">Chào bạn,</p>"
+                + "<p style=\"color: #374151; font-size: 16px;\">Mã OTP đăng nhập của bạn là: <strong style=\"font-size: 24px; color: #10b981;\">" + otp + "</strong></p>"
+                + "<p style=\"color: #374151; font-size: 16px;\">Mã có hiệu lực trong 3 phút.</p>"
+                + "<p style=\"color: #6b7280; font-size: 14px; margin-top: 30px;\">Nếu bạn không yêu cầu mã này, xin vui lòng bỏ qua email.</p>"
+                + "</div>";
+                
+        Content content = new Content("text/html", htmlContent);
+        Mail mail = new Mail(from, subject, to, content);
+
+        SendGrid sg = new SendGrid(sendGridApiKey);
+        Request request = new Request();
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+            System.out.println(response.getStatusCode());
+        } catch (IOException ex) {
+            System.err.println("Failed to send OTP email: " + ex.getMessage());
+        }
+    }
 }
