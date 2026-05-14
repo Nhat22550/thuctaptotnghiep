@@ -84,6 +84,13 @@ spring:
             - Path=/api/auth/**
           filters:
             - StripPrefix=1
+            
+        - id: react-chat-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/chat/**
+          filters:
+            - StripPrefix=1
 
         # ─── BANNER ROUTES ────────────────────────────────
         - id: banner-route
