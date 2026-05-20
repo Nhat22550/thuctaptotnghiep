@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {  AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
 const ChatBox = () => {
@@ -39,7 +39,7 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8900/api/chat', {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat`, {
         message: userMessage.text,
       });
 

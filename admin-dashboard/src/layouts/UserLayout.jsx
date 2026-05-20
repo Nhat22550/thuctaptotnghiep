@@ -73,7 +73,8 @@ const UserLayout = () => {
   // Fallback image handling
   const getImageUrl = (url) => {
     if (!url) return '';
-    if (url.startsWith('/uploads/')) return `http://localhost:8810${url}`;
+    const baseUrl = import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810';
+    if (url.startsWith('/uploads/')) return `${baseUrl}${url}`;
     return url;
   }
 

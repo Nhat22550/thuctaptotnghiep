@@ -5,7 +5,7 @@ import {
   User, Phone, MapPin, CreditCard, CheckCircle, Bike, ChevronRight,
   Shield, AlertCircle, Wallet, Zap
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {  AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 
@@ -78,9 +78,10 @@ const OrderSuccess = ({ order, onContinue }) => (
 
 // ─── Cart Item Row ────────────────────────────────────────────────────────────
 const CartItem = ({ item, onIncrease, onDecrease, onRemove, index }) => {
+  const baseUrl = import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810';
   const imgSrc =
     item.imageUrl && item.imageUrl.startsWith('/uploads/')
-      ? `http://localhost:8810${item.imageUrl}`
+      ? `${baseUrl}${item.imageUrl}`
       : item.imageUrl || 'https://placehold.co/200x200/f8fafc/94a3b8?text=EV';
 
   return (

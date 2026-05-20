@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 // ─── Resolve ảnh (logic dùng chung) ───────────────────────────────────────────
 const resolveImage = (imageUrl) => {
   if (!imageUrl) return null;
-  if (imageUrl.startsWith('/uploads/')) return `http://localhost:8810${imageUrl}`;
+  const baseUrl = import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810';
+  if (imageUrl.startsWith('/uploads/')) return `${baseUrl}${imageUrl}`;
   return imageUrl;
 };
 const PLACEHOLDER = 'https://placehold.co/600x600/f8fafc/94a3b8?text=NHAT+EV';

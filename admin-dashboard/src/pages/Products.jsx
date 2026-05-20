@@ -132,8 +132,9 @@ const Products = () => {
     });
 
     // Set preview format based on backend URL pattern
+    const baseUrl = import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810';
     const previewUrl = prod.imageUrl && prod.imageUrl.startsWith('/uploads/')
-      ? `http://localhost:8810/api/products${prod.imageUrl}`
+      ? `${baseUrl}/api/products${prod.imageUrl}`
       : prod.imageUrl;
     setImagePreview(previewUrl || null);
 
@@ -194,7 +195,7 @@ const Products = () => {
                     <div className="w-16 h-16 rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center bg-gray-50">
                       {prod.imageUrl ? (
                         <img
-                          src={prod.imageUrl && prod.imageUrl.startsWith('/uploads/') ? `http://localhost:8810${prod.imageUrl}` : prod.imageUrl}
+                          src={prod.imageUrl && prod.imageUrl.startsWith('/uploads/') ? `${import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810'}${prod.imageUrl}` : prod.imageUrl}
                           alt={prod.productName}
                           className="w-full h-full object-cover"
                           onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/150?text=No+Image" }}

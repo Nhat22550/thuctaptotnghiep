@@ -13,7 +13,8 @@ const FALLBACK = 'Đang cập nhật...';
 
 const resolveImage = (imageUrl) => {
   if (!imageUrl) return null;
-  if (imageUrl.startsWith('/uploads/')) return `http://localhost:8810${imageUrl}`;
+  const baseUrl = import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810';
+  if (imageUrl.startsWith('/uploads/')) return `${baseUrl}${imageUrl}`;
   return imageUrl;
 };
 const PLACEHOLDER_IMG = 'https://placehold.co/800x800/1e293b/94a3b8?text=NHAT+EV';
