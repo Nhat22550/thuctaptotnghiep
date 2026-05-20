@@ -5,7 +5,7 @@ import {
   User, Phone, MapPin, CreditCard, CheckCircle, Bike, ChevronRight,
   Shield, AlertCircle, Wallet, Zap
 } from 'lucide-react';
-import {  AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 
