@@ -1,6 +1,6 @@
 import api from './api';
 
-const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+const BACKEND_URL = import.meta.env.VITE_IMAGE_URL || 'http://localhost:8810';
 
 // ─── LẤY TẤT CẢ BANNER (Admin) ──────────────────────────────────────────────
 export const getBanners = async () => {
