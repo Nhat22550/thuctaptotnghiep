@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Plus, Minus, ArrowLeft,
@@ -156,6 +156,26 @@ const CartPage = () => {
 
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get('/auth/me');
+        if (response.data) {
+          const profile = response.data;
+          setForm(prev => ({
+            ...prev,
+            receiverName: prev.receiverName || profile.fullName || profile.userName || '',
+            phone: prev.phone || profile.phone || '',
+            address: prev.address || profile.address || ''
+          }));
+        }
+      } catch (error) {
+        console.log('User not logged in or cannot fetch profile', error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const showError = (message) => {
     setErrorToast({ show: true, message });
     setTimeout(() => setErrorToast({ show: false, message: '' }), 4000);
@@ -188,12 +208,22 @@ const CartPage = () => {
     setSubmitting(true);
     try {
       // ═══ Tạo Order trước (cho cả VNPAY và COD/BANK) ═══
+      const currentUserId = localStorage.getItem('userId');
+
       const orderPayload = {
+        userId: currentUserId,
         receiverName: form.receiverName,
         shippingAddress: form.address,
         phoneNumber: form.phone,
         total: Math.round(totalPrice),
         paymentMethod: form.paymentMethod,
+        items: cartItems.map(item => ({
+          productId: item.id,
+          productName: item.productName,
+          price: item.price,
+          quantity: item.quantity,
+          imageUrl: item.imageUrl
+        }))
       };
 
       // Thêm userId nếu đang đăng nhập

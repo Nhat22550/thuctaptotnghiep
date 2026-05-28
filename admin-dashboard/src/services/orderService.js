@@ -5,6 +5,11 @@ export const getOrders = async () => {
   return response.data;
 };
 
+export const getOrdersByUserId = async (userId) => {
+  const response = await api.get(`/orders/user/${userId}`);
+  return response.data;
+};
+
 export const getOrderById = async (id) => {
   const response = await api.get(`/orders/${id}`);
   return response.data;

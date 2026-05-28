@@ -2,6 +2,8 @@ package com.rainbowforest.orderservice.controller;
 
 import com.rainbowforest.orderservice.domain.Order;
 import com.rainbowforest.orderservice.domain.User;
+import com.rainbowforest.orderservice.domain.Item;
+import com.rainbowforest.orderservice.domain.Product;
 import com.rainbowforest.orderservice.feignclient.UserClient;
 import com.rainbowforest.orderservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,23 @@ public class OrderController {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
+    // 1.1 Lấy danh sách đơn hàng theo User ID
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable("userId") Long userId) {
+        List<Order> orders = orderService.getOrdersByUserId(userId);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
+    // 1.2 Lấy chi tiết một đơn hàng theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id) {
+        Order order = orderService.getOrderById(id);
+        if (order != null) {
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     // 2. Thêm đơn hàng mới
     // React gọi: POST http://localhost:8900/api/orders
     @PostMapping
@@ -52,6 +71,8 @@ public class OrderController {
             // Xử lý status theo paymentMethod
             String paymentMethod = payload.containsKey("paymentMethod")
                     ? payload.get("paymentMethod").toString() : "COD";
+            
+            order.setPaymentMethod(paymentMethod);
 
             if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
                 order.setStatus("PENDING");
@@ -70,6 +91,34 @@ public class OrderController {
                     User user = userClient.getUserById(userId);
                     if (user != null) order.setUser(user);
                 } catch (Exception ignored) {}
+            }
+
+            // Xử lý items
+            if (payload.containsKey("items")) {
+                List<Map<String, Object>> itemsList = (List<Map<String, Object>>) payload.get("items");
+                List<Item> orderItems = new java.util.ArrayList<>();
+                for (Map<String, Object> itemMap : itemsList) {
+                    Item item = new Item();
+                    item.setQuantity(Integer.parseInt(itemMap.get("quantity").toString()));
+                    item.setSubTotal(new java.math.BigDecimal(itemMap.get("price").toString())
+                            .multiply(new java.math.BigDecimal(item.getQuantity())));
+                    
+                    Product product = new Product();
+                    // Không set productId để JPA tự generate snapshot
+                    if (itemMap.containsKey("productName")) {
+                        product.setProductName(itemMap.get("productName").toString());
+                    }
+                    if (itemMap.containsKey("price")) {
+                        product.setPrice(new java.math.BigDecimal(itemMap.get("price").toString()));
+                    }
+                    if (itemMap.containsKey("imageUrl") && itemMap.get("imageUrl") != null) {
+                        product.setImage(itemMap.get("imageUrl").toString());
+                    }
+                    
+                    item.setProduct(product);
+                    orderItems.add(item);
+                }
+                order.setItems(orderItems);
             }
 
             Order saved = orderService.saveOrder(order);

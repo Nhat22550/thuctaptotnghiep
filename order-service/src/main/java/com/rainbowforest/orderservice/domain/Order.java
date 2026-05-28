@@ -40,6 +40,9 @@ public class Order {
     @Column(name = "delivery_status")
     private String deliveryStatus;
 
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
     @ManyToMany (cascade = CascadeType.ALL)
     @JoinTable (name = "cart" , joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn (name = "item_id"))
     private List<Item> items;
@@ -131,6 +134,14 @@ public class Order {
 	public void setItems(List<Item> items) {
 		this.items = items;
 	}
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 
 	public User getUser() {
 		return user;

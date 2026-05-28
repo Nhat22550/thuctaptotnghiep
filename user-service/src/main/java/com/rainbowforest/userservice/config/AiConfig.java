@@ -5,14 +5,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 
 import java.util.function.Function;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @Configuration
 public class AiConfig {
 
-    public record OrderRequest(String productName, int quantity) {}
+    public record OrderRequest(
+        @JsonProperty(required = true, value = "productName") @JsonPropertyDescription("Tên của mẫu xe điện khách hàng muốn mua") String productName, 
+        @JsonProperty(required = true, value = "quantity") @JsonPropertyDescription("Số lượng xe khách hàng muốn mua") int quantity
+    ) {}
+
 
     @Bean
-    @Description("Tạo đơn hàng mới và trả về đường link thanh toán VNPAY giả lập cho khách hàng. Function này PHẢI được gọi khi khách hàng đồng ý chốt đơn mua xe điện.")
+    @Description("Dùng để tạo link thanh toán VNPAY. CHỈ gọi 1 lần duy nhất khi khách đã đồng ý chốt đơn.")
     public Function<OrderRequest, String> createOrderFunction() {
         return request -> {
             // Giả lập tính toán đơn giá (Giả sử mặc định 50,000,000 VND / xe)

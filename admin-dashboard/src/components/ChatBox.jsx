@@ -39,7 +39,7 @@ const ChatBox = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/chat`, {
         message: userMessage.text,
       });
 
@@ -67,33 +67,52 @@ const ChatBox = () => {
   const renderMessageContent = (text) => {
     if (!text || typeof text !== 'string') return text;
 
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
+    // Pattern for markdown image: ![alt](url)
+    const imgRegex = /(!\[[^\]]*\]\(https?:\/\/[^\s)]+\))/g;
+    const parts = text.split(imgRegex);
 
     return parts.map((part, index) => {
-      if (part.match(urlRegex)) {
-        if (part.includes('vnpayment.vn')) {
-          return (
-            <div key={index} className="mt-2 mb-1">
-              <a
-                href={part}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-2 px-4 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all text-sm"
-              >
-                Thanh toán ngay
-              </a>
-            </div>
-          );
-        }
-        // Normal links
+      // Check if this part is an image markdown
+      const imgMatch = part.match(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/);
+      if (imgMatch) {
+        const altText = imgMatch[1];
+        const url = imgMatch[2];
         return (
-          <a key={index} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-200 underline break-all">
-            {part}
-          </a>
+          <div key={index} className="my-2">
+            <img src={url} alt={altText} className="w-full max-w-[200px] rounded-lg shadow-sm" />
+          </div>
         );
       }
-      return <span key={index}>{part}</span>;
+
+      // If not an image, parse normal URLs
+      const urlRegex = /(https?:\/\/[^\s)]+)/g;
+      const subParts = part.split(urlRegex);
+      
+      return subParts.map((subPart, subIndex) => {
+        if (subPart.match(urlRegex)) {
+          if (subPart.includes('vnpayment.vn')) {
+            return (
+              <div key={`${index}-${subIndex}`} className="mt-2 mb-1">
+                <a
+                  href={subPart}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-2 px-4 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all text-sm"
+                >
+                  Thanh toán ngay
+                </a>
+              </div>
+            );
+          }
+          // Normal links
+          return (
+            <a key={`${index}-${subIndex}`} href={subPart} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700 underline break-all font-medium">
+              {subPart}
+            </a>
+          );
+        }
+        return <span key={`${index}-${subIndex}`}>{subPart}</span>;
+      });
     });
   };
 

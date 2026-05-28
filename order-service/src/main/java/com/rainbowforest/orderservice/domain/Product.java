@@ -12,7 +12,6 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long productId;
 
     @Transient
@@ -45,6 +44,9 @@ public class Product {
 
     @Column (name = "motor_power")
     private Integer motorPower;
+
+    @Column (name = "image")
+    private String image;
 
     @OneToMany (mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -136,6 +138,14 @@ public class Product {
 
     public void setMotorPower(Integer motorPower) {
         this.motorPower = motorPower;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public List<Item> getItems() {

@@ -89,7 +89,7 @@ const Orders = () => {
 
     setFormData({
       userId: order.user?.id || '',
-      productId: Item?.productId || '', 
+      productId: Item?.product?.productId || '', 
       quantity: Item?.quantity || 1,
       status: order.status || 'Pending'
     });
@@ -277,21 +277,35 @@ const Orders = () => {
                 </div>
 
                 {editingOrder && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Trạng thái <span className="text-red-500">*</span>
-                    </label>
+                  <>
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 space-y-2 mb-4">
+                      <h3 className="font-semibold text-gray-800 mb-3">Thông tin giao hàng (từ Khách)</h3>
+                      <p className="text-sm"><span className="text-gray-500 w-28 inline-block">Người nhận:</span> <span className="font-medium text-gray-900">{editingOrder.receiverName || 'N/A'}</span></p>
+                      <p className="text-sm"><span className="text-gray-500 w-28 inline-block">Số điện thoại:</span> <span className="font-medium text-gray-900">{editingOrder.phoneNumber || 'N/A'}</span></p>
+                      <p className="text-sm"><span className="text-gray-500 w-28 inline-block">Địa chỉ:</span> <span className="font-medium text-gray-900">{editingOrder.shippingAddress || 'N/A'}</span></p>
+                      <p className="text-sm"><span className="text-gray-500 w-28 inline-block">Thanh toán:</span> <span className="font-medium text-blue-600">{editingOrder.paymentMethod || 'N/A'}</span></p>
+                      <p className="text-sm"><span className="text-gray-500 w-28 inline-block">Tổng tiền:</span> <span className="font-bold text-red-600">{editingOrder.total ? Number(editingOrder.total).toLocaleString() + 'đ' : 'N/A'}</span></p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Trạng thái <span className="text-red-500">*</span>
+                      </label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                     >
                       <option value="Pending">Pending</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="PAID">PAID</option>
+                      <option value="SHIPPING">SHIPPING</option>
                       <option value="Completed">Completed</option>
                       <option value="Delivered">Delivered</option>
                       <option value="Cancelled">Cancelled</option>
                     </select>
                   </div>
+                  </>
                 )}
 
               </form>

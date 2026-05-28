@@ -265,6 +265,7 @@ public class AuthController {
         }
         
         Map<String, Object> result = new HashMap<>();
+        result.put("id", user.getId());
         result.put("userName", user.getUserName());
         if (user.getUserDetails() != null) {
             result.put("firstName", user.getUserDetails().getFirstName());

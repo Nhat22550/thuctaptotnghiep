@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { User, Mail, Phone, MapPin, Save, ShieldCheck } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Save, ShieldCheck, Package, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
+import OrderHistoryList from '../components/profile/OrderHistoryList';
+import OrderDetailTracking from '../components/profile/OrderDetailTracking';
 
 const Profile = () => {
     const [profile, setProfile] = useState({
+        id: null,
         userName: '',
         fullName: '',
         email: '',
@@ -14,6 +17,10 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    
+    // Quản lý các Tab trong Profile
+    const [activeTab, setActiveTab] = useState('info'); // 'info' hoặc 'orders'
+    const [selectedOrderId, setSelectedOrderId] = useState(null); // Quản lý trạng thái Detail
 
     useEffect(() => {
         fetchProfile();
@@ -63,7 +70,7 @@ const Profile = () => {
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto"
+            className="max-w-5xl mx-auto space-y-6"
         >
             <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
                 {/* Header Decoration */}
@@ -75,8 +82,8 @@ const Profile = () => {
                     </div>
                 </div>
 
-                <div className="pt-16 pb-8 px-8">
-                    <div className="flex justify-between items-end mb-8">
+                <div className="pt-16 pb-6 px-8">
+                    <div className="flex justify-between items-end mb-6">
                         <div>
                             <h1 className="text-2xl font-black text-slate-900">{profile.fullName || 'Người dùng mới'}</h1>
                             <p className="text-slate-500 text-sm flex items-center gap-1.5 mt-1">
@@ -89,90 +96,140 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {message.text && (
-                        <div className={`mb-6 p-4 rounded-2xl text-sm font-medium ${
-                            message.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'
-                        }`}>
-                            {message.text}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleUpdate} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Họ và Tên</label>
-                                <div className="relative">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                    <input 
-                                        type="text" 
-                                        value={profile.fullName || ''}
-                                        onChange={(e) => setProfile({...profile, fullName: e.target.value})}
-                                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium"
-                                        placeholder="Nhập họ tên đầy đủ"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Email</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                    <input 
-                                        type="email" 
-                                        value={profile.email || ''}
-                                        disabled
-                                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-100 border-transparent text-slate-400 cursor-not-allowed font-medium"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Số điện thoại</label>
-                                <div className="relative">
-                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                    <input 
-                                        type="text" 
-                                        value={profile.phone || ''}
-                                        onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium"
-                                        placeholder="Nhập số điện thoại"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Địa chỉ</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                    <input 
-                                        type="text" 
-                                        value={profile.address || ''}
-                                        onChange={(e) => setProfile({...profile, address: e.target.value})}
-                                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium"
-                                        placeholder="Nhập địa chỉ của bạn"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-4">
-                            <button 
-                                type="submit"
-                                disabled={saving}
-                                className="w-full md:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-70"
-                            >
-                                {saving ? (
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    <>
-                                        <Save size={18} />
-                                        Lưu thay đổi
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
+                    {/* Tab Navigation */}
+                    <div className="flex border-b border-slate-200 gap-6 mt-8">
+                        <button 
+                            className={`pb-4 px-2 font-bold flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'info' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                            onClick={() => {
+                                setActiveTab('info');
+                                setSelectedOrderId(null);
+                            }}
+                        >
+                            <Info size={18} />
+                            Thông tin cá nhân
+                        </button>
+                        <button 
+                            className={`pb-4 px-2 font-bold flex items-center gap-2 transition-colors border-b-2 ${activeTab === 'orders' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                            onClick={() => setActiveTab('orders')}
+                        >
+                            <Package size={18} />
+                            Lịch sử mua hàng
+                        </button>
+                    </div>
                 </div>
+            </div>
+
+            {/* Tab Content */}
+            <div className="mt-6">
+                {activeTab === 'info' && (
+                    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100">
+                        {message.text && (
+                            <div className={`mb-6 p-4 rounded-2xl text-sm font-medium ${
+                                message.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'
+                            }`}>
+                                {message.text}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleUpdate} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Họ và Tên</label>
+                                    <div className="relative">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input 
+                                            type="text" 
+                                            value={profile.fullName || ''}
+                                            onChange={(e) => setProfile({...profile, fullName: e.target.value})}
+                                            className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium"
+                                            placeholder="Nhập họ tên đầy đủ"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Email</label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input 
+                                            type="email" 
+                                            value={profile.email || ''}
+                                            disabled
+                                            className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-100 border-transparent text-slate-400 cursor-not-allowed font-medium"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Số điện thoại</label>
+                                    <div className="relative">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input 
+                                            type="text" 
+                                            value={profile.phone || ''}
+                                            onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                                            className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium"
+                                            placeholder="Nhập số điện thoại"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Địa chỉ</label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input 
+                                            type="text" 
+                                            value={profile.address || ''}
+                                            onChange={(e) => setProfile({...profile, address: e.target.value})}
+                                            className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium"
+                                            placeholder="Nhập địa chỉ của bạn"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-4">
+                                <button 
+                                    type="submit"
+                                    disabled={saving}
+                                    className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-70"
+                                >
+                                    {saving ? (
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <>
+                                            <Save size={18} />
+                                            Lưu thay đổi
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
+
+                {activeTab === 'orders' && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className=""
+                    >
+                        {selectedOrderId ? (
+                            <OrderDetailTracking 
+                                orderId={selectedOrderId} 
+                                onBack={() => setSelectedOrderId(null)} 
+                            />
+                        ) : (
+                            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-6 md:p-8 border border-slate-100">
+                                <OrderHistoryList 
+                                    userId={profile.id} 
+                                    onViewDetails={(id) => setSelectedOrderId(id)} 
+                                />
+                            </div>
+                        )}
+                    </motion.div>
+                )}
             </div>
         </motion.div>
     );

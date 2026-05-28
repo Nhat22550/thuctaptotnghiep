@@ -22,8 +22,8 @@ eureka:
 
 # ─── VNPAY Sandbox Configuration ───
 vnpay:
-  tmn-code: EATLZ152
-  hash-secret: CRJQFDK0VO8RWS7OE1R2ZB5FHSE78SB6
+  tmn-code: 0S5H1KK6
+  hash-secret: H8GXZJWX0NAOG9XYEW1CVPG0H5IXN56K
   url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   return-url: http://localhost:5173/payment/return
   api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction

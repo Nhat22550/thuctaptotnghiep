@@ -9,4 +9,5 @@ public interface OrderService {
     public Order getOrderById(Long id);
     public Order updateOrder(Long id, Order orderDetails);
     public void deleteOrder(Long id);
+    public List<Order> getOrdersByUserId(Long userId);
 }
