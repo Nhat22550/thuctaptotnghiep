@@ -14,6 +14,7 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Categories from './pages/Categories';
 import Products from './pages/Products';
+import Inventory from './pages/Inventory';
 import Users from './pages/Users';
 import Orders from './pages/Orders';
 import PaymentList from './pages/PaymentList';
@@ -59,6 +60,7 @@ const App = () => {
               <Route index element={<Dashboard />} />
               <Route path="categories" element={<Categories />} />
               <Route path="products" element={<Products />} />
+              <Route path="inventory" element={<Inventory />} />
               <Route path="users" element={<Users />} />
               <Route path="orders" element={<Orders />} />
               <Route path="payments" element={<PaymentList />} />

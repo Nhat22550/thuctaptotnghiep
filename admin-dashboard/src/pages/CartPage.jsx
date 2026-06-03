@@ -156,12 +156,15 @@ const CartPage = () => {
 
   const [errors, setErrors] = useState({});
 
+  const [currentUserId, setCurrentUserId] = useState(null);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await api.get('/auth/me');
         if (response.data) {
           const profile = response.data;
+          setCurrentUserId(profile.id);
           setForm(prev => ({
             ...prev,
             receiverName: prev.receiverName || profile.fullName || profile.userName || '',
@@ -208,10 +211,13 @@ const CartPage = () => {
     setSubmitting(true);
     try {
       // ═══ Tạo Order trước (cho cả VNPAY và COD/BANK) ═══
-      const currentUserId = localStorage.getItem('userId');
+      let userIdToSend = currentUserId;
+      if (!userIdToSend) {
+        userIdToSend = localStorage.getItem('userId');
+      }
 
       const orderPayload = {
-        userId: currentUserId,
+        userId: userIdToSend,
         receiverName: form.receiverName,
         shippingAddress: form.address,
         phoneNumber: form.phone,
@@ -226,10 +232,6 @@ const CartPage = () => {
         }))
       };
 
-      // Thêm userId nếu đang đăng nhập
-      const userId = localStorage.getItem('userId');
-      if (userId) orderPayload.userId = userId;
-
       const orderRes = await api.post('/orders', orderPayload);
       const order = orderRes.data;
       console.log('[CartPage] Order created:', order);
@@ -237,7 +239,7 @@ const CartPage = () => {
       if (form.paymentMethod === 'VNPAY') {
         // ═══ VNPAY: Redirect sang cổng thanh toán ═══
         const response = await api.get('/payment/create_url', {
-          params: { amount: Math.round(totalPrice), orderId: order.id },
+          params: { amount: order.total, orderId: order.id },
         });
         if (response.data && response.data.url) {
           // KHÔNG clear giỏ hàng ở đây — sẽ xử lý ở PaymentResult

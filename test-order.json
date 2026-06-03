@@ -1,0 +1,1 @@
+{"userId": 1, "receiverName": "Test", "shippingAddress": "Test", "phoneNumber": "123", "total": 1000, "paymentMethod": "COD", "items": [{"productId": 1, "productName": "Product 1", "price": 100, "quantity": 1, "imageUrl": "http"}]}

@@ -97,6 +97,9 @@ public class AuthController {
 
             UserDetails userDetails = new UserDetails();
             userDetails.setEmail(email);
+            // FirstName and LastName are NOT NULL in the database
+            userDetails.setFirstName("User");
+            userDetails.setLastName("New");
             user.setUserDetails(userDetails);
 
             UserRole role = userRoleRepository.findUserRoleByRoleName("USER");
@@ -259,6 +262,12 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        // Nếu không có token, Spring Security gán mặc định là anonymousUser
+        if (username == null || "anonymousUser".equals(username)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập");
+        }
+        
         User user = userRepository.findByUserName(username);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -281,6 +290,11 @@ public class AuthController {
     @PutMapping("/update")
     public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> payload) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        if (username == null || "anonymousUser".equals(username)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập");
+        }
+        
         User user = userRepository.findByUserName(username);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");

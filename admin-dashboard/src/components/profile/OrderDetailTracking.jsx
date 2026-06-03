@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getOrderById } from '../../services/orderService';
-import { ArrowLeft, MapPin, Phone, User, Package, Clock, CheckCircle2, Truck } from 'lucide-react';
+import { getOrderById, updateOrderStatus, downloadInvoice } from '../../services/orderService';
+import { ArrowLeft, MapPin, Phone, User, Package, Clock, CheckCircle2, Truck, XCircle, FileText } from 'lucide-react';
 
 const OrderDetailTracking = ({ orderId, onBack }) => {
     const [order, setOrder] = useState(null);
@@ -28,24 +28,62 @@ const OrderDetailTracking = ({ orderId, onBack }) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
     };
 
-    // Xác định Step hiện tại
     const getActiveStep = () => {
         if (!order) return 0;
-        if (order.status === 'PENDING') return 1;
-        if (order.status === 'PAID' && order.deliveryStatus === 'WAITING_PAYMENT') return 2;
-        if (order.deliveryStatus === 'SHIPPING') return 3;
-        if (order.status === 'COMPLETED' || order.deliveryStatus === 'DELIVERED') return 4;
-        return 0;
+        const status = order.status?.toUpperCase() || '';
+        const deliveryStatus = order.deliveryStatus?.toUpperCase() || '';
+        
+        if (status === 'CANCELLED') return -1;
+        if (status === 'COMPLETED' || status === 'DELIVERED' || deliveryStatus === 'DELIVERED') return 4;
+        if (status === 'SHIPPING') return 3;
+        if (status === 'PAID') return 2;
+        if (status === 'PENDING') return 1;
+        
+        if (deliveryStatus === 'SHIPPING') return 3;
+        if (deliveryStatus === 'WAITING_PAYMENT') return 2;
+        return 1;
     };
 
     const activeStep = getActiveStep();
 
     const steps = [
-        { id: 1, label: 'Chờ thanh toán', icon: Clock },
-        { id: 2, label: 'Đã thanh toán', icon: CheckCircle2, subtitle: 'VNPay' },
+        { id: 1, label: 'Chờ thanh toán / Xác nhận', icon: Clock },
+        { id: 2, label: 'Đã thanh toán', icon: CheckCircle2, subtitle: order?.paymentMethod === 'VNPAY' ? 'VNPay' : 'COD' },
         { id: 3, label: 'Đang chuẩn bị & Giao', icon: Truck },
         { id: 4, label: 'Thành công', icon: Package }
     ];
+
+    const handleCancelOrder = async () => {
+        if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác.')) {
+            try {
+                setLoading(true);
+                await updateOrderStatus(order.id, 'CANCELLED');
+                await fetchOrderDetails();
+                alert('Đã hủy đơn hàng thành công!');
+            } catch (error) {
+                console.error('Lỗi khi hủy đơn:', error);
+                alert('Có lỗi xảy ra khi hủy đơn hàng. Vui lòng thử lại sau.');
+                setLoading(false);
+            }
+        }
+    };
+
+    const handleDownloadInvoice = async () => {
+        try {
+            const blob = await downloadInvoice(order.id);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Hoa_don_NHAT_EV_#${order.id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Lỗi tải hóa đơn:', error);
+            alert('Có lỗi xảy ra khi tải hóa đơn PDF. Vui lòng thử lại sau.');
+        }
+    };
 
     if (loading || !order) {
         return (
@@ -57,13 +95,37 @@ const OrderDetailTracking = ({ orderId, onBack }) => {
 
     return (
         <div className="space-y-6">
-            <button 
-                onClick={onBack}
-                className="flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors"
-            >
-                <ArrowLeft size={20} />
-                Quay lại danh sách
-            </button>
+            <div className="flex items-center justify-between">
+                <button 
+                    onClick={onBack}
+                    className="flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors"
+                >
+                    <ArrowLeft size={20} />
+                    Quay lại danh sách
+                </button>
+                
+                <div className="flex items-center gap-3">
+                    {activeStep >= 2 && (
+                        <button 
+                            onClick={handleDownloadInvoice}
+                            className="flex items-center gap-2 px-4 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg font-bold transition-colors"
+                        >
+                            <FileText size={18} />
+                            Tải Hóa Đơn PDF
+                        </button>
+                    )}
+
+                    {activeStep > 0 && activeStep < 3 && (
+                        <button 
+                            onClick={handleCancelOrder}
+                            className="flex items-center gap-2 px-4 py-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg font-bold transition-colors"
+                        >
+                            <XCircle size={18} />
+                            Hủy đơn hàng
+                        </button>
+                    )}
+                </div>
+            </div>
 
             {/* Stepper */}
             <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
@@ -71,47 +133,55 @@ const OrderDetailTracking = ({ orderId, onBack }) => {
                     Trạng thái đơn hàng <span className="text-blue-600">#{order.id}</span>
                 </h2>
                 
-                <div className="relative">
-                    {/* Progress Bar Background */}
-                    <div className="absolute top-1/2 left-0 w-full h-1.5 bg-slate-100 -translate-y-1/2 rounded-full hidden md:block"></div>
-                    
-                    {/* Active Progress Bar */}
-                    <div 
-                        className="absolute top-1/2 left-0 h-1.5 bg-blue-500 -translate-y-1/2 rounded-full hidden md:block transition-all duration-500"
-                        style={{ width: `${((activeStep - 1) / (steps.length - 1)) * 100}%` }}
-                    ></div>
-
-                    <div className="flex flex-col md:flex-row justify-between gap-6 md:gap-0 relative z-10">
-                        {steps.map((step, index) => {
-                            const Icon = step.icon;
-                            const isActive = activeStep >= step.id;
-                            const isCurrent = activeStep === step.id;
-
-                            return (
-                                <div key={step.id} className="flex md:flex-col items-center md:items-center gap-4 md:gap-3 flex-1">
-                                    {/* Icon Circle */}
-                                    <div className={`
-                                        w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-300
-                                        ${isActive ? 'bg-blue-600 border-white text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 border-slate-100 text-slate-400'}
-                                        ${isCurrent ? 'ring-4 ring-blue-100' : ''}
-                                    `}>
-                                        <Icon size={20} />
-                                    </div>
-                                    
-                                    {/* Label */}
-                                    <div className="text-left md:text-center">
-                                        <p className={`font-bold text-sm ${isActive ? 'text-blue-900' : 'text-slate-500'}`}>
-                                            {step.label}
-                                        </p>
-                                        {step.subtitle && (
-                                            <p className="text-xs font-bold text-blue-500 mt-0.5">{step.subtitle}</p>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                {activeStep === -1 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center bg-red-50 rounded-2xl border border-red-100 mt-4">
+                        <XCircle className="w-16 h-16 text-red-500 mb-4" />
+                        <h3 className="text-xl font-bold text-red-700 mb-2">Đơn hàng đã bị hủy</h3>
+                        <p className="text-red-500/80">Đơn hàng này đã được hủy bỏ và sẽ không được giao.</p>
                     </div>
-                </div>
+                ) : (
+                    <div className="relative mt-8">
+                        {/* Progress Bar Background */}
+                        <div className="absolute top-1/2 left-0 w-full h-1.5 bg-slate-100 -translate-y-1/2 rounded-full hidden md:block"></div>
+                        
+                        {/* Active Progress Bar */}
+                        <div 
+                            className="absolute top-1/2 left-0 h-1.5 bg-blue-500 -translate-y-1/2 rounded-full hidden md:block transition-all duration-500"
+                            style={{ width: `${((activeStep - 1) / (steps.length - 1)) * 100}%` }}
+                        ></div>
+
+                        <div className="flex flex-col md:flex-row justify-between gap-6 md:gap-0 relative z-10">
+                            {steps.map((step, index) => {
+                                const Icon = step.icon;
+                                const isActive = activeStep >= step.id;
+                                const isCurrent = activeStep === step.id;
+
+                                return (
+                                    <div key={step.id} className="flex md:flex-col items-center md:items-center gap-4 md:gap-3 flex-1">
+                                        {/* Icon Circle */}
+                                        <div className={`
+                                            w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-300
+                                            ${isActive ? 'bg-blue-600 border-white text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 border-slate-100 text-slate-400'}
+                                            ${isCurrent ? 'ring-4 ring-blue-100' : ''}
+                                        `}>
+                                            <Icon size={20} />
+                                        </div>
+                                        
+                                        {/* Label */}
+                                        <div className="text-left md:text-center">
+                                            <p className={`font-bold text-sm ${isActive ? 'text-blue-900' : 'text-slate-500'}`}>
+                                                {step.label}
+                                            </p>
+                                            {step.subtitle && (
+                                                <p className="text-xs font-bold text-blue-500 mt-0.5">{step.subtitle}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

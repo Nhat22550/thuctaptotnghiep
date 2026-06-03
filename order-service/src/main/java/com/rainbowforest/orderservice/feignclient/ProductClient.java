@@ -10,6 +10,8 @@ import com.rainbowforest.orderservice.domain.Product;
 public interface ProductClient {
 
     @GetMapping(value = "/products/{id}")
-    public Product getProductById(@PathVariable(value = "id") Long productId);
+    public java.util.Map<String, Object> getProductById(@PathVariable(value = "id") Long productId);
 
+    @org.springframework.web.bind.annotation.PutMapping(value = "/products/{id}/deduct-stock")
+    public void deductStock(@PathVariable(value = "id") Long id, @org.springframework.web.bind.annotation.RequestParam("quantity") Integer quantity);
 }

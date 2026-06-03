@@ -20,7 +20,15 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void addItemToCart(String cartId, Long productId, Integer quantity) {
-        Product product = productClient.getProductById(productId);
+        java.util.Map<String, Object> productMap = productClient.getProductById(productId);
+        Product product = new Product();
+        if (productMap != null) {
+            product.setProductName(productMap.get("productName").toString());
+            product.setPrice(new java.math.BigDecimal(productMap.get("price").toString()));
+            if (productMap.containsKey("imageUrl") && productMap.get("imageUrl") != null) {
+                product.setImage(productMap.get("imageUrl").toString());
+            }
+        }
         Item item = new Item(quantity,product, CartUtilities.getSubTotalForItem(product,quantity));
         cartRedisRepository.addItemToCart(cartId, item);
     }

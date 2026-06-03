@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Regular.ttf');
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Bold.ttf');
+            font-weight: bold;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        .header {
+            width: 100%;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+            letter-spacing: 2px;
+        }
+        .invoice-title {
+            text-align: right;
+            font-size: 24px;
+            font-weight: bold;
+            color: #475569;
+        }
+        .info-section {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .info-table {
+            width: 100%;
+        }
+        .info-table td {
+            vertical-align: top;
+        }
+        .company-info {
+            width: 50%;
+        }
+        .customer-info {
+            width: 50%;
+            text-align: right;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .table th {
+            background-color: #f8fafc;
+            border-bottom: 2px solid #cbd5e1;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            color: #475569;
+        }
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .total-section {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .total-table {
+            width: 40%;
+            float: right;
+            border-collapse: collapse;
+        }
+        .total-table td {
+            padding: 10px;
+        }
+        .total-label {
+            font-weight: bold;
+            color: #475569;
+        }
+        .total-value {
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            color: #2563eb;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="header">
+        <tr>
+            <td class="logo">NHẬT.</td>
+            <td class="invoice-title">HÓA ĐƠN ĐIỆN TỬ</td>
+        </tr>
+    </table>
+
+    <table class="info-section info-table">
+        <tr>
+            <td class="company-info">
+                <div class="section-title">THÔNG TIN ĐƠN VỊ BÁN</div>
+                <div><strong>Cửa hàng xe điện NHẬT</strong></div>
+                <div>Địa chỉ: 123 Đường Công Nghệ, Quận 1, TP.HCM</div>
+                <div>Điện thoại: 1900 1234</div>
+                <div>Website: nhat-ev.vn</div>
+            </td>
+            <td class="customer-info">
+                <div class="section-title">THÔNG TIN KHÁCH HÀNG</div>
+                <div>Khách hàng: <strong th:text="${order.receiverName}">Nguyễn Văn A</strong></div>
+                <div>Điện thoại: <span th:text="${order.phoneNumber}">0901234567</span></div>
+                <div>Địa chỉ: <span th:text="${order.shippingAddress}">456 Đường ABC, Quận 2, TP.HCM</span></div>
+                <div style="margin-top: 10px;">Mã đơn hàng: <strong th:text="${'#' + order.id}">#123</strong></div>
+                <div>Ngày đặt: <span th:text="${#temporals.format(order.orderedDate, 'dd/MM/yyyy')}">01/01/2026</span></div>
+                <div>Thanh toán: <span th:text="${order.paymentMethod == 'VNPAY' ? 'VNPAY' : 'Tiền mặt (COD)'}">VNPAY</span></div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="5%" class="text-center">STT</th>
+                <th width="45%">Tên sản phẩm</th>
+                <th width="15%" class="text-center">Số lượng</th>
+                <th width="15%" class="text-right">Đơn giá</th>
+                <th width="20%" class="text-right">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item, iterStat : ${order.items}">
+                <td class="text-center" th:text="${iterStat.count}">1</td>
+                <td th:text="${item.product.productName}">Xe máy điện VinFast</td>
+                <td class="text-center" th:text="${item.quantity}">1</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(item.subTotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total-section clearfix">
+        <table class="total-table">
+            <tr>
+                <td class="total-label">Tạm tính:</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+            </tr>
+            <tr>
+                <td class="total-label">Phí vận chuyển:</td>
+                <td class="text-right">Miễn phí</td>
+            </tr>
+            <tr>
+                <td class="total-label">TỔNG CỘNG:</td>
+                <td class="total-value" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        Cảm ơn quý khách đã tin tưởng và mua sắm tại cửa hàng xe điện NHẬT.<br/>
+        Mọi thắc mắc xin vui lòng liên hệ hotline 1900 1234 để được hỗ trợ.
+    </div>
+
+</body>
+</html>

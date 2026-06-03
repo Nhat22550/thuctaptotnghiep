@@ -63,3 +63,15 @@ export const deleteProduct = async (id) => {
     const response = await api.delete(`/products/${id}`);
     return response.data;
 };
+
+// ─── THÊM TỒN KHO ────────────────────────────────────────────────────────────
+export const addStock = async (id, quantity) => {
+    const response = await api.put(`/products/${id}/add-stock?quantity=${quantity}`);
+    return response.data;
+};
+
+// ─── TRỪ TỒN KHO ─────────────────────────────────────────────────────────────
+export const deductStock = async (id, quantity) => {
+    const response = await api.put(`/products/${id}/deduct-stock?quantity=${quantity}`);
+    return response.data;
+};

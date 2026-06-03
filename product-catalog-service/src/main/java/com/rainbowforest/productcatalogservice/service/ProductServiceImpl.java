@@ -54,4 +54,20 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long productId) {
         productRepository.deleteById(productId);
     }
+
+    @Override
+    public void deductStock(Long id, Integer quantity) {
+        int updatedCount = productRepository.deductStock(id, quantity);
+        if (updatedCount == 0) {
+            throw new RuntimeException("Sản phẩm không tồn tại hoặc số lượng tồn kho không đủ để trừ: " + id);
+        }
+    }
+
+    @Override
+    public void addStock(Long id, Integer quantity) {
+        int updatedCount = productRepository.addStock(id, quantity);
+        if (updatedCount == 0) {
+            throw new RuntimeException("Sản phẩm không tồn tại: " + id);
+        }
+    }
 }

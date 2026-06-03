@@ -25,7 +25,8 @@ const OrderHistoryList = ({ userId, onViewDetails }) => {
     };
 
     const getStatusColor = (status) => {
-        switch (status) {
+        const normalizedStatus = status?.toUpperCase() || '';
+        switch (normalizedStatus) {
             case 'PENDING':
                 return 'bg-amber-100 text-amber-700 border-amber-200';
             case 'PAID':
@@ -39,7 +40,8 @@ const OrderHistoryList = ({ userId, onViewDetails }) => {
     };
 
     const formatStatus = (status) => {
-        switch (status) {
+        const normalizedStatus = status?.toUpperCase() || '';
+        switch (normalizedStatus) {
             case 'PENDING': return 'Chờ thanh toán';
             case 'PAID': return 'Đã thanh toán';
             case 'COMPLETED': return 'Hoàn thành';

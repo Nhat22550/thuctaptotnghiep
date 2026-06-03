@@ -82,14 +82,19 @@ const ProductCard = ({ product, onAddToCart, index = 0 }) => {
             </div>
             <button
               onClick={handleAdd}
+              disabled={product.stock <= 0}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-xs transition-all shadow-sm ${
-                added
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
+                product.stock <= 0 
+                  ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                  : added
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
               }`}
-              title="Mua ngay"
+              title={product.stock <= 0 ? "Đã hết hàng" : "Mua ngay"}
             >
-              {added ? (
+              {product.stock <= 0 ? (
+                <>HẾT HÀNG</>
+              ) : added ? (
                 <>
                   <CheckCircle className="w-4 h-4" />
                   ĐÃ THÊM

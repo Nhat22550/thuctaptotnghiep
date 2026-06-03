@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, List, Users, ClipboardList, CreditCard, Image } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, List, Users, ClipboardList, CreditCard, Image, Package } from 'lucide-react';
 
 const Sidebar = () => {
   return (
@@ -49,6 +49,18 @@ const Sidebar = () => {
             >
               <ShoppingBag className="w-5 h-5" />
               Quản lý Sản phẩm
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/admin/inventory"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }`
+              }
+            >
+              <Package className="w-5 h-5" />
+              Quản lý tồn kho
             </NavLink>
           </li>
           <li>

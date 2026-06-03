@@ -57,6 +57,9 @@ public class Product {
     @Column (name = "weight")
     private Integer weight;      // Đơn vị: kg
 
+    @Column (name = "stock")
+    private Integer stock;
+
 	public Product() {
 
 	}
@@ -171,5 +174,13 @@ public class Product {
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+
+	public Integer getStock() {
+		return stock;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
 	}
 }

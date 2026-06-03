@@ -230,16 +230,27 @@ const ProductDetailPage = () => {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <button onClick={handleAddToCart}
-              className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg"
+              disabled={product.stock <= 0}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 shadow-md ${
+                product.stock <= 0
+                  ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                  : 'bg-slate-800 hover:bg-slate-900 text-white hover:scale-[1.02] hover:shadow-lg'
+              }`}
             >
               <ShoppingCart className="w-6 h-6" />
-              Thêm vào giỏ
+              {product.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
             </button>
-            <Link to="/cart" onClick={handleAddToCart}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg"
-            >
-              Mua ngay
-            </Link>
+            {product.stock <= 0 ? (
+              <button disabled className="flex-1 flex items-center justify-center gap-2 bg-slate-200 text-slate-500 cursor-not-allowed py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 shadow-md">
+                Hết hàng
+              </button>
+            ) : (
+              <Link to="/cart" onClick={handleAddToCart}
+                className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg"
+              >
+                Mua ngay
+              </Link>
+            )}
           </div>
 
           {/* Badges */}

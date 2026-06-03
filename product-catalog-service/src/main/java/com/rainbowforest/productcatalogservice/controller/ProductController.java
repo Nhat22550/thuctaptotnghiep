@@ -182,4 +182,34 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping(value = "/products/{id}/deduct-stock")
+    public ResponseEntity<String> deductStock(
+            @PathVariable("id") Long id,
+            @RequestParam("quantity") Integer quantity) {
+        try {
+            productService.deductStock(id, quantity);
+            return new ResponseEntity<>("Trừ kho thành công", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Lỗi server", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/products/{id}/add-stock")
+    public ResponseEntity<String> addStock(
+            @PathVariable("id") Long id,
+            @RequestParam("quantity") Integer quantity) {
+        try {
+            productService.addStock(id, quantity);
+            return new ResponseEntity<>("Nhập kho thành công", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Lỗi server", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
