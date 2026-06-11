@@ -145,6 +145,9 @@ const CartPage = () => {
   const [placedOrder, setPlacedOrder] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorToast, setErrorToast] = useState({ show: false, message: '' });
+  const [discountInput, setDiscountInput] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+  const [discountError, setDiscountError] = useState('');
 
   const [form, setForm] = useState({
     receiverName: '',
@@ -184,6 +187,23 @@ const CartPage = () => {
     setTimeout(() => setErrorToast({ show: false, message: '' }), 4000);
   };
 
+  const handleApplyDiscount = async () => {
+    if (!discountInput.trim()) {
+      setDiscountError('Vui lòng nhập mã giảm giá');
+      return;
+    }
+    setDiscountError('');
+    try {
+      const res = await api.get(`/discounts/validate/${discountInput}?orderTotal=${totalPrice}`);
+      setAppliedDiscount(res.data);
+    } catch (error) {
+      setAppliedDiscount(null);
+      setDiscountError(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
+    }
+  };
+  
+  const finalPrice = appliedDiscount ? Math.max(0, totalPrice - appliedDiscount.discountAmount) : totalPrice;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -221,8 +241,9 @@ const CartPage = () => {
         receiverName: form.receiverName,
         shippingAddress: form.address,
         phoneNumber: form.phone,
-        total: Math.round(totalPrice),
+        total: Math.round(finalPrice),
         paymentMethod: form.paymentMethod,
+        discountCode: appliedDiscount?.discount?.code || null,
         items: cartItems.map(item => ({
           productId: item.id,
           productName: item.productName,
@@ -257,7 +278,7 @@ const CartPage = () => {
         phone: form.phone,
         address: form.address,
         paymentMethod: form.paymentMethod,
-        totalAmount: totalPrice,
+        totalAmount: finalPrice,
       });
       clearCart();
       setOrderSuccess(true);
@@ -555,10 +576,36 @@ const CartPage = () => {
                 <span>Phí vận chuyển</span>
                 <span className="font-bold">Miễn phí</span>
               </div>
+
+              <div className="pt-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Mã giảm giá"
+                    value={discountInput}
+                    onChange={(e) => setDiscountInput(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 transition-all uppercase"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyDiscount}
+                    className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Áp dụng
+                  </button>
+                </div>
+                {discountError && <p className="text-red-500 text-xs mt-1 font-medium">{discountError}</p>}
+                {appliedDiscount && (
+                  <p className="text-green-600 text-xs mt-1 font-medium">
+                    Đã giảm: {appliedDiscount.discountAmount.toLocaleString('vi-VN')}đ
+                  </p>
+                )}
+              </div>
+
               <hr className="border-slate-100" />
               <div className="flex justify-between font-black text-xl pt-1">
                 <span className="text-slate-900">Tổng cộng</span>
-                <span className="text-blue-700 font-black">{totalPrice.toLocaleString('vi-VN')}đ</span>
+                <span className="text-blue-700 font-black">{finalPrice.toLocaleString('vi-VN')}đ</span>
               </div>
             </div>
 

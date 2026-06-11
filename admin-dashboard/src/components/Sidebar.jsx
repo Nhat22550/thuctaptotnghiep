@@ -111,6 +111,18 @@ const Sidebar = () => {
               Quản lý Banner
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/admin/discounts"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }`
+              }
+            >
+              <ClipboardList className="w-5 h-5" />
+              Quản lý Mã giảm giá
+            </NavLink>
+          </li>
         </ul>
       </nav>
     </aside>

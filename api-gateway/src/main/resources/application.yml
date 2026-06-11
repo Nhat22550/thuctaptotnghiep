@@ -46,6 +46,12 @@ spring:
             - Path=/api/shop/**
           filters:
             - StripPrefix=2
+        - id: discount-route
+          uri: lb://order-service
+          predicates:
+            - Path=/api/discounts/**
+          filters:
+            - StripPrefix=1
         - id: product-recommendation-service
           uri: lb://product-recommendation-service
           predicates:

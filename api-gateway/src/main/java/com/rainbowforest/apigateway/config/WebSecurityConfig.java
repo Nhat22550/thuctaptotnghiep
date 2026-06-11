@@ -38,8 +38,8 @@ public class WebSecurityConfig {
             )
             .authorizeExchange(exchanges -> exchanges
                 .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .pathMatchers("/api/auth/**", "/api/products/**", "/api/banners/**", "/uploads/**", "/api/chat/**").permitAll()
-                .pathMatchers("/api/admin/**").hasRole("ADMIN")
+                .pathMatchers("/api/auth/**", "/api/products/**", "/api/banners/**", "/uploads/**", "/api/chat/**", "/api/discounts/validate/**").permitAll()
+                .pathMatchers("/api/admin/**", "/api/discounts/**").hasRole("ADMIN")
                 .pathMatchers("/api/user/**", "/api/orders/**", "/api/payments/**").hasAnyRole("USER", "ADMIN")
                 .anyExchange().authenticated()
             );

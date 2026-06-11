@@ -37,6 +37,9 @@ public class OrderController {
     @Autowired
     private com.rainbowforest.orderservice.service.PdfGenerationService pdfGenerationService;
 
+    @Autowired
+    private com.rainbowforest.orderservice.service.DiscountService discountService;
+
     // 1. Lấy danh sách đơn hàng (FIX LỖI 405)
     // React gọi: GET http://localhost:8900/api/orders
     @GetMapping
@@ -158,7 +161,29 @@ public class OrderController {
                     orderItems.add(item);
                 }
                 order.setItems(orderItems);
-                // Ghi đè lại total bằng tổng tính toán an toàn
+                
+                // Áp dụng mã giảm giá nếu có
+                if (payload.containsKey("discountCode") && payload.get("discountCode") != null) {
+                    String code = payload.get("discountCode").toString();
+                    try {
+                        com.rainbowforest.orderservice.domain.Discount discount = discountService.validateDiscount(code, computedTotal);
+                        java.math.BigDecimal discountAmount = discountService.calculateDiscountAmount(discount, computedTotal);
+                        
+                        // Chặn số âm
+                        if (discountAmount.compareTo(computedTotal) > 0) {
+                            discountAmount = computedTotal;
+                        }
+                        
+                        order.setDiscountCode(code);
+                        order.setDiscountAmount(discountAmount);
+                        
+                        computedTotal = computedTotal.subtract(discountAmount);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Lỗi áp dụng mã giảm giá: " + e.getMessage());
+                    }
+                }
+
+                // Ghi đè lại total bằng tổng tính toán an toàn (sẽ gửi sang VNPAY)
                 order.setTotal(computedTotal);
             }
 

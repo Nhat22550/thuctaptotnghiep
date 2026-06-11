@@ -19,6 +19,7 @@ import Users from './pages/Users';
 import Orders from './pages/Orders';
 import PaymentList from './pages/PaymentList';
 import Banners from './pages/Banners';
+import Discounts from './pages/Discounts';
 
 // --- CÁC IMPORT CỦA USER ---
 import UserLayout from './layouts/UserLayout';
@@ -65,6 +66,7 @@ const App = () => {
               <Route path="orders" element={<Orders />} />
               <Route path="payments" element={<PaymentList />} />
               <Route path="banners" element={<Banners />} />
+              <Route path="discounts" element={<Discounts />} />
             </Route>
           </Route>
         </Routes>
