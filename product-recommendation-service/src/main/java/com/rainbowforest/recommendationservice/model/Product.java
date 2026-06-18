@@ -10,7 +10,6 @@ import java.util.List;
 public class Product {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
     @Column (name = "product_name")
     private String productName;
@@ -21,8 +20,8 @@ public class Product {
     @Column (name = "description")
     private String description;
 
-    @Column (name = "category")
-    private String category;
+    @Transient
+    private java.util.Map<String, Object> category;
 
     @Column (name = "battery_capacity")
     private String batteryCapacity;
@@ -46,7 +45,7 @@ public class Product {
     private String chargeTime;
 
     @Column (name = "weight")
-    private Integer weight;
+    private String weight;
 
     @OneToMany (mappedBy = "product")
     @JsonIgnore
@@ -93,11 +92,11 @@ public class Product {
         this.description = description;
     }
 
-    public String getCategory() {
+    public java.util.Map<String, Object> getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(java.util.Map<String, Object> category) {
         this.category = category;
     }
 
@@ -157,11 +156,11 @@ public class Product {
         this.chargeTime = chargeTime;
     }
 
-    public Integer getWeight() {
+    public String getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
+    public void setWeight(String weight) {
         this.weight = weight;
     }
 

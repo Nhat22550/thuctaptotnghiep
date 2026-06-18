@@ -5,9 +5,9 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: ${DB_URL:jdbc:postgresql://dpg-d84j7egjs32c739sr4n0-a.singapore-postgres.render.com:5432/payment_service_db}
-    username: ${DB_USERNAME:nhat_db_server_user}
-    password: ${DB_PASSWORD:yE2UWIBEcyrkosSxWWOq5Xh2tuFKcayH}
+    url: ${DB_URL:jdbc:postgresql://dpg-d8pq59jtqb8s738ei6f0-a.singapore-postgres.render.com:5432/payment_service_db}
+    username: ${DB_USERNAME:nhat_db_server_msfu_user}
+    password: ${DB_PASSWORD:FiHPWRw3srvSHJ7LA2KvVpYAMYV8zWCG}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

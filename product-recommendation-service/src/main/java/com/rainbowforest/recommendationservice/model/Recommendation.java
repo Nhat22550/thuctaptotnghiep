@@ -2,6 +2,7 @@ package com.rainbowforest.recommendationservice.model;
 
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table (name = "recommendation")
@@ -13,21 +14,37 @@ public class Recommendation {
     @Column (name = "rating")
     private int rating;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne (cascade = CascadeType.MERGE)
     @JoinColumn (name = "product_id")
-
     private Product product;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne (cascade = CascadeType.MERGE)
     @JoinColumn (name = "user_id")
     private User user;
+
+    @Column(name = "comment", length = 1000)
+    private String comment;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
     
+    @Column(name = "admin_reply", length = 1000)
+    private String adminReply;
+
+    @Column(name = "replied_at")
+    private LocalDateTime repliedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
     public Recommendation() {
 	
 	}
 
-	public Recommendation(int rating, Product product, User user) {
+	public Recommendation(int rating, String comment, Product product, User user) {
         this.rating = rating;
+        this.comment = comment;
         this.product = product;
         this.user = user;
     }
@@ -62,5 +79,37 @@ public class Recommendation {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getAdminReply() {
+        return adminReply;
+    }
+
+    public void setAdminReply(String adminReply) {
+        this.adminReply = adminReply;
+    }
+
+    public LocalDateTime getRepliedAt() {
+        return repliedAt;
+    }
+
+    public void setRepliedAt(LocalDateTime repliedAt) {
+        this.repliedAt = repliedAt;
     }
 }

@@ -37,7 +37,7 @@ const Login = () => {
 
   // Handle Auth Success (reusable for both modes)
   const handleAuthSuccess = (response) => {
-    const { token, role, username: responseUsername } = response.data;
+    const { token, role, username: responseUsername, userId } = response.data;
     
     if (token) {
       localStorage.setItem('token', token);
@@ -46,6 +46,9 @@ const Login = () => {
       }
       if (responseUsername) {
         localStorage.setItem('username', responseUsername);
+      }
+      if (userId) {
+        localStorage.setItem('userId', userId);
       }
     }
     

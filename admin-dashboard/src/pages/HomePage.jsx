@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getProducts } from '../services/productService';
 import { getActiveBanners, getBannerImageUrl } from '../services/bannerService';
-import { ShoppingCart, Zap, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Zap, ArrowRight, ChevronLeft, ChevronRight, Filter, X, SlidersHorizontal } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,14 +35,46 @@ const HomePage = () => {
   const { addToCart } = useCart();
   const [toast, setToast] = useState({ show: false, name: '' });
   const [priceRange, setPriceRange] = useState({ min: null, max: null });
+  // Thêm state cho bộ lọc nâng cao
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [sortOrder, setSortOrder] = useState('');
+  const [speedFilter, setSpeedFilter] = useState('');
 
   const normalizeText = (text) => text.toLowerCase().replace(/[- ]/g, '');
 
-  const filteredProducts = products.filter((product) => {
+  const categories = Array.from(
+    new Set(products.map(p => p.category?.name).filter(Boolean))
+  );
+
+  let resultProducts = products.filter((product) => {
+    // 1. Search name
     const normalizedProductName = normalizeText(product.productName || '');
     const normalizedSearchQuery = normalizeText(searchQuery);
-    return normalizedProductName.includes(normalizedSearchQuery);
+    if (!normalizedProductName.includes(normalizedSearchQuery)) return false;
+
+    // 2. Category
+    if (selectedCategory && product.category?.name !== selectedCategory) return false;
+
+    // 3. Speed
+    if (speedFilter === 'under_50' && (product.topSpeed == null || product.topSpeed >= 50)) return false;
+    if (speedFilter === 'over_50' && (product.topSpeed == null || product.topSpeed < 50)) return false;
+
+    return true;
   });
+
+  // 4. Sắp xếp
+  if (sortOrder === 'price_asc') {
+    resultProducts.sort((a, b) => a.price - b.price);
+  } else if (sortOrder === 'price_desc') {
+    resultProducts.sort((a, b) => b.price - a.price);
+  } else if (sortOrder === 'name_asc') {
+    resultProducts.sort((a, b) => (a.productName || '').localeCompare(b.productName || ''));
+  } else if (sortOrder === 'name_desc') {
+    resultProducts.sort((a, b) => (b.productName || '').localeCompare(a.productName || ''));
+  }
+
+  const filteredProducts = resultProducts;
 
   // ─── FETCH DATA ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -294,13 +326,127 @@ const HomePage = () => {
                 : `${filteredProducts.length} mẫu xe đang có sẵn`}
             </p>
           </div>
+          {/* Nút bật/tắt bộ lọc nâng cao */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm ${
+              showFilters 
+                ? 'bg-slate-800 text-white hover:bg-slate-700' 
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            <span className="hidden sm:inline">{showFilters ? 'Đóng bộ lọc' : 'Lọc nâng cao'}</span>
+          </button>
         </div>
 
-        {/* ─── BỘ LỌC THEO GIÁ ──────────────────────────────────────────── */}
-        {!searchQuery && (
-          <div className="flex flex-wrap gap-2">
+        {/* ─── FILTER PANEL (COLLAPSIBLE) ─── */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden mb-6"
+            >
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* 1. Lọc theo giá (từ PRICE_FILTERS cũ) */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Khoảng giá</label>
+                    <div className="flex flex-col gap-2">
+                      {PRICE_FILTERS.map((filter) => {
+                        const isActive = priceRange.min === filter.min && priceRange.max === filter.max;
+                        return (
+                          <button
+                            key={filter.label}
+                            onClick={() => setPriceRange({ min: filter.min, max: filter.max })}
+                            className={`text-left px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                              isActive
+                                ? 'bg-blue-50 border-blue-500 text-blue-700'
+                                : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50/50'
+                            }`}
+                          >
+                            {filter.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 2. Lọc theo Danh mục */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Danh mục xe</label>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                    >
+                      <option value="">Tất cả danh mục</option>
+                      {categories.map((cat, idx) => (
+                        <option key={idx} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* 3. Lọc theo Tốc độ */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Tốc độ tối đa</label>
+                    <select
+                      value={speedFilter}
+                      onChange={(e) => setSpeedFilter(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                    >
+                      <option value="">Tất cả tốc độ</option>
+                      <option value="under_50">Dưới 50 km/h</option>
+                      <option value="over_50">Từ 50 km/h trở lên</option>
+                    </select>
+                  </div>
+
+                  {/* 4. Sắp xếp */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sắp xếp theo</label>
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                    >
+                      <option value="">Mặc định (Mới nhất)</option>
+                      <option value="price_asc">Giá: Thấp đến Cao</option>
+                      <option value="price_desc">Giá: Cao đến Thấp</option>
+                      <option value="name_asc">Tên: A - Z</option>
+                      <option value="name_desc">Tên: Z - A</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Nút xóa bộ lọc */}
+                {(selectedCategory || sortOrder || speedFilter || priceRange.min !== null) && (
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setSelectedCategory('');
+                        setSortOrder('');
+                        setSpeedFilter('');
+                        setPriceRange({ min: null, max: null });
+                      }}
+                      className="text-sm font-semibold text-red-500 hover:text-red-600 flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                      Xóa tất cả bộ lọc
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ─── BỘ LỌC THEO GIÁ (NHANH) - ẨN NẾU ĐÃ MỞ BỘ LỌC NÂNG CAO ─── */}
+        {!searchQuery && !showFilters && (
+          <div className="flex flex-wrap gap-2 mt-4">
             <span className="flex items-center text-sm font-semibold text-slate-500 mr-1">
-              Lọc theo giá:
+              Lọc nhanh giá:
             </span>
             {PRICE_FILTERS.map((filter) => {
               const isActive = priceRange.min === filter.min && priceRange.max === filter.max;

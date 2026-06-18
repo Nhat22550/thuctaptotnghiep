@@ -116,6 +116,7 @@ public class AuthController {
         response.put("token", token);
         response.put("role", roleName.toUpperCase());
         response.put("username", user.getUserName());
+        response.put("userId", user.getId());
         response.put("message", "Đăng nhập thành công");
         
         return ResponseEntity.ok(response);
@@ -165,6 +166,7 @@ public class AuthController {
             response.put("token", token);
             response.put("role", roleName.toUpperCase());
             response.put("username", user.getUserName());
+            response.put("userId", user.getId());
             response.put("message", "Đăng nhập thành công");
             return ResponseEntity.ok(response);
         } else {

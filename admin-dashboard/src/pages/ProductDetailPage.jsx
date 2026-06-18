@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getProductById } from '../services/productService';
+import { getReviewsByProductId, createReview } from '../services/reviewService';
 import { useCart } from '../context/CartContext';
 
 const FALLBACK = 'Đang cập nhật...';
@@ -61,7 +62,12 @@ const ProductDetailPage = () => {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [toast, setToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
   const [imgError, setImgError] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -86,14 +92,59 @@ const ProductDetailPage = () => {
         setLoading(false);
       }
     };
+    
+    const fetchReviews = async () => {
+      try {
+        const data = await getReviewsByProductId(id);
+        setReviews(data || []);
+      } catch(e) {
+        setReviews([]);
+      }
+    };
+
     fetchProduct();
+    fetchReviews();
   }, [id]);
 
   const handleAddToCart = () => {
     if (!product) return;
     for (let i = 0; i < quantity; i++) addToCart(product);
+    setToastMsg(`Đã thêm "${product.productName}" vào giỏ hàng!`);
     setToast(true);
     setTimeout(() => setToast(false), 2500);
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('Vui lòng đăng nhập để gửi đánh giá!');
+      return;
+    }
+    if (!reviewComment.trim()) {
+      alert('Vui lòng nhập nội dung bình luận!');
+      return;
+    }
+    try {
+      setSubmittingReview(true);
+      await createReview(userId, id, 5, reviewComment); // Hardcode rating 5 or 0
+      setReviewComment('');
+      
+      const data = await getReviewsByProductId(id);
+      setReviews(data || []);
+      
+      setToastMsg('Cảm ơn bạn đã gửi bình luận!');
+      setToast(true);
+      setTimeout(() => setToast(false), 2500);
+    } catch(err) {
+      console.error(err);
+      const errorMsg = typeof err.response?.data === 'string' 
+        ? err.response.data 
+        : 'Có lỗi xảy ra khi gửi bình luận, vui lòng thử lại.';
+      alert(errorMsg);
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   if (loading) {
@@ -317,7 +368,78 @@ const ProductDetailPage = () => {
         </div>
       </motion.section>
 
-      <Toast show={toast} message={`Đã thêm "${product.productName}" vào giỏ hàng!`} />
+      {/* ── Reviews Section ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mb-16"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-1 h-8 bg-blue-500 rounded-full" />
+          <h2 className="text-2xl font-black text-slate-800">Hỏi đáp & Bình luận</h2>
+        </div>
+        
+        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-8">
+          {/* Form bình luận */}
+          <form onSubmit={handleSubmitReview} className="mb-10 pb-10 border-b border-gray-100">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Gửi bình luận của bạn</h3>
+
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder="Chia sẻ cảm nhận hoặc câu hỏi của bạn về sản phẩm này..."
+              className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none mb-4 resize-none h-28"
+            ></textarea>
+            <button
+              type="submit"
+              disabled={submittingReview}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-xl transition-colors disabled:opacity-50"
+            >
+              {submittingReview ? 'Đang gửi...' : 'Gửi bình luận'}
+            </button>
+          </form>
+
+          {/* Danh sách bình luận */}
+          <div className="space-y-6">
+            {reviews.length === 0 ? (
+              <p className="text-gray-500 text-center italic py-4">Chưa có bình luận nào cho sản phẩm này. Hãy là người đầu tiên!</p>
+            ) : (
+              reviews.map((review) => (
+                <div key={review.id} className="bg-slate-50 p-5 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full font-bold">
+                        {(review.user?.userName || 'U').charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800">{review.user?.userName || 'Người dùng ẩn danh'}</p>
+                        <p className="text-xs text-gray-500">
+                          {review.createdAt ? new Date(review.createdAt).toLocaleDateString('vi-VN') : ''}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-slate-600 mt-3 pl-14">{review.comment}</p>
+                  
+                  {/* Admin Reply */}
+                  {review.adminReply && (
+                    <div className="mt-4 ml-14 bg-white p-4 rounded-xl border border-gray-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Shield className="w-5 h-5 text-blue-500" />
+                        <span className="font-bold text-sm text-slate-800">Quản trị viên</span>
+                      </div>
+                      <p className="text-sm text-slate-600">{review.adminReply}</p>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </motion.section>
+
+      <Toast show={toast} message={toastMsg} />
     </motion.div>
   );
 };
