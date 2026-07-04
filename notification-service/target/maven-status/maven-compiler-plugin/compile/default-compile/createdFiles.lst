@@ -1,0 +1,11 @@
+com\rainbowforest\notificationservice\NotificationServiceApplication.class
+com\rainbowforest\notificationservice\config\RabbitMQConfig$1.class
+com\rainbowforest\notificationservice\dto\OrderCompletedEvent.class
+com\rainbowforest\notificationservice\DbCheck.class
+com\rainbowforest\notificationservice\dto\OrderCompletedEvent$OrderCompletedEventBuilder.class
+com\rainbowforest\notificationservice\repository\EmailLogRepository.class
+com\rainbowforest\notificationservice\domain\EmailLog$EmailLogBuilder.class
+com\rainbowforest\notificationservice\domain\EmailLog.class
+com\rainbowforest\notificationservice\messaging\NotificationConsumer.class
+com\rainbowforest\notificationservice\config\RabbitMQConfig.class
+com\rainbowforest\notificationservice\service\EmailService.class

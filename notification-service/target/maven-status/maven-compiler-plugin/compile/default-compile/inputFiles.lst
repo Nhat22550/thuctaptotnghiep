@@ -1,0 +1,8 @@
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\domain\EmailLog.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\dto\OrderCompletedEvent.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\messaging\NotificationConsumer.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\service\EmailService.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\config\RabbitMQConfig.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\repository\EmailLogRepository.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\NotificationServiceApplication.java
+D:\web2\e-commerce-microservices-master\notification-service\src\main\java\com\rainbowforest\notificationservice\DbCheck.java

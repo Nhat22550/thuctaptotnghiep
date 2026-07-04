@@ -147,12 +147,12 @@
             </td>
             <td class="customer-info">
                 <div class="section-title">THÔNG TIN KHÁCH HÀNG</div>
-                <div>Khách hàng: <strong th:text="${order.receiverName}">Nguyễn Văn A</strong></div>
-                <div>Điện thoại: <span th:text="${order.phoneNumber}">0901234567</span></div>
-                <div>Địa chỉ: <span th:text="${order.shippingAddress}">456 Đường ABC, Quận 2, TP.HCM</span></div>
-                <div style="margin-top: 10px;">Mã đơn hàng: <strong th:text="${'#' + order.id}">#123</strong></div>
-                <div>Ngày đặt: <span th:text="${#temporals.format(order.orderedDate, 'dd/MM/yyyy')}">01/01/2026</span></div>
-                <div>Thanh toán: <span th:text="${order.paymentMethod == 'VNPAY' ? 'VNPAY' : 'Tiền mặt (COD)'}">VNPAY</span></div>
+                <div>Khách hàng: <strong th:text="${order?.receiverName ?: 'Khách hàng'}">Nguyễn Văn A</strong></div>
+                <div>Điện thoại: <span th:text="${order?.phoneNumber ?: ''}">0901234567</span></div>
+                <div>Địa chỉ: <span th:text="${order?.shippingAddress ?: ''}">456 Đường ABC, Quận 2, TP.HCM</span></div>
+                <div style="margin-top: 10px;">Mã đơn hàng: <strong th:text="${order?.id != null ? '#' + order.id : ''}">#123</strong></div>
+                <div>Ngày đặt: <span th:text="${order?.orderedDate != null ? #temporals.format(order.orderedDate, 'dd/MM/yyyy') : ''}">01/01/2026</span></div>
+                <div>Thanh toán: <span th:text="${order?.paymentMethod == 'VNPAY' ? 'VNPAY' : 'Tiền mặt (COD)'}">VNPAY</span></div>
             </td>
         </tr>
     </table>
@@ -168,12 +168,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="item, iterStat : ${order.items}">
+            <tr th:each="item, iterStat : ${order?.items}">
                 <td class="text-center" th:text="${iterStat.count}">1</td>
-                <td th:text="${item.product.productName}">Xe máy điện VinFast</td>
-                <td class="text-center" th:text="${item.quantity}">1</td>
-                <td class="text-right" th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
-                <td class="text-right" th:text="${#numbers.formatDecimal(item.subTotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+                <td th:text="${item?.product?.productName ?: 'Sản phẩm không xác định'}">Xe máy điện VinFast</td>
+                <td class="text-center" th:text="${item?.quantity ?: 0}">1</td>
+                <td class="text-right" th:text="${item?.product?.price != null ? #numbers.formatDecimal(item.product.price, 1, 'COMMA', 0, 'POINT') : '0'} + ' đ'">10,000,000 đ</td>
+                <td class="text-right" th:text="${item?.subTotal != null ? #numbers.formatDecimal(item.subTotal, 1, 'COMMA', 0, 'POINT') : '0'} + ' đ'">10,000,000 đ</td>
             </tr>
         </tbody>
     </table>
@@ -182,7 +182,7 @@
         <table class="total-table">
             <tr>
                 <td class="total-label">Tạm tính:</td>
-                <td class="text-right" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+                <td class="text-right" th:text="${order?.total != null ? #numbers.formatDecimal(order.total, 1, 'COMMA', 0, 'POINT') : '0'} + ' đ'">10,000,000 đ</td>
             </tr>
             <tr>
                 <td class="total-label">Phí vận chuyển:</td>
@@ -190,7 +190,7 @@
             </tr>
             <tr>
                 <td class="total-label">TỔNG CỘNG:</td>
-                <td class="total-value" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000,000 đ</td>
+                <td class="total-value" th:text="${order?.total != null ? #numbers.formatDecimal(order.total, 1, 'COMMA', 0, 'POINT') : '0'} + ' đ'">10,000,000 đ</td>
             </tr>
         </table>
     </div>

@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Base64;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.rainbowforest.orderservice.config.RabbitMQConfig;
+import com.rainbowforest.orderservice.dto.OrderCompletedEvent;
 
 @RestController
 @RequestMapping("/orders") // Mọi request /api/orders sẽ vào đây
@@ -39,6 +43,12 @@ public class OrderController {
 
     @Autowired
     private com.rainbowforest.orderservice.service.DiscountService discountService;
+
+    @Autowired
+    private com.rainbowforest.orderservice.messaging.OrderPublisher orderPublisher;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     // 1. Lấy danh sách đơn hàng (FIX LỖI 405)
     // React gọi: GET http://localhost:8900/api/orders
@@ -139,6 +149,7 @@ public class OrderController {
                                 if (realProduct.containsKey("imageUrl") && realProduct.get("imageUrl") != null) {
                                     productSnapshot.setImage(realProduct.get("imageUrl").toString());
                                 }
+                                productSnapshot.setId(originProductId);
                             } else {
                                 throw new RuntimeException("Product not found with id: " + originProductId);
                             }
@@ -189,18 +200,19 @@ public class OrderController {
 
             Order saved = orderService.saveOrder(order);
             
-            // Trừ kho cho đơn không phải VNPAY (COD)
-            if (!"VNPAY".equalsIgnoreCase(paymentMethod) && saved.getItems() != null) {
-                for (Item item : saved.getItems()) {
-                    if (item.getProduct() != null && item.getProduct().getProductId() != null) {
-                        try {
-                            productClient.deductStock(item.getProduct().getProductId(), item.getQuantity());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+            // Publish Saga Event ORDER_CREATED
+            if (saved.getItems() != null && !saved.getItems().isEmpty()) {
+                Item firstItem = saved.getItems().get(0);
+                com.rainbowforest.orderservice.dto.SagaEvent event = com.rainbowforest.orderservice.dto.SagaEvent.builder()
+                        .orderId(saved.getId())
+                        .productId(firstItem.getProduct().getId() != null ? firstItem.getProduct().getId() : firstItem.getProduct().getProductId())
+                        .quantity(firstItem.getQuantity())
+                        .amount(saved.getTotal())
+                        .status("ORDER_CREATED")
+                        .build();
+                orderPublisher.publishOrderCreated(event);
             }
+
             return new ResponseEntity<>(saved, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,6 +238,42 @@ public class OrderController {
                                 }
                             }
                         }
+                    }
+
+                    // Generate PDF and publish order.completed event
+                    try {
+                        byte[] pdfBytes = pdfGenerationService.generateInvoicePdf(order);
+                        String pdfBase64 = Base64.getEncoder().encodeToString(pdfBytes);
+
+                        String recipientEmail = "khachhang@example.com";
+                        if (order.getUser() != null && order.getUser().getId() != null) {
+                            try {
+                                User fullUser = userClient.getUserById(order.getUser().getId());
+                                if (fullUser != null && fullUser.getUserDetails() != null && fullUser.getUserDetails().getEmail() != null) {
+                                    recipientEmail = fullUser.getUserDetails().getEmail();
+                                }
+                            } catch (Exception ex) {
+                                System.err.println("Failed to fetch user email: " + ex.getMessage());
+                            }
+                        }
+
+                        String customerName = order.getReceiverName() != null ? order.getReceiverName() : "Quý khách";
+
+                        OrderCompletedEvent orderCompletedEvent = OrderCompletedEvent.builder()
+                                .orderId(order.getId())
+                                .recipientEmail(recipientEmail)
+                                .customerName(customerName)
+                                .pdfBase64(pdfBase64)
+                                .build();
+
+                        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "order.completed", orderCompletedEvent);
+                        System.out.println("Published order.completed event for Order ID: " + order.getId() + " from OrderController");
+                        java.nio.file.Files.writeString(java.nio.file.Paths.get("success.log"), "Successfully published event to " + recipientEmail);
+                    } catch (Exception e) {
+                        try {
+                            java.nio.file.Files.writeString(java.nio.file.Paths.get("error.log"), "Error: " + e.getMessage() + "\n" + java.util.Arrays.toString(e.getStackTrace()));
+                        } catch(Exception ignored) {}
+                        System.err.println("Failed to generate PDF or publish order.completed event: " + e.getMessage());
                     }
                 }
                 
