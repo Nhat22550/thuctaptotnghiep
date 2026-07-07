@@ -13,10 +13,10 @@ const fadeUp = {
 };
 
 const stats = [
-  { value: '5+', label: 'Năm kinh nghiệm', icon: Award },
-  { value: '10.000+', label: 'Khách hàng tin dùng', icon: TrendingUp },
-  { value: '98%', label: 'Hài lòng dịch vụ', icon: Shield },
+  { value: '100%', label: 'Chính hãng', icon: Award },
   { value: '24/7', label: 'Hỗ trợ liên tục', icon: Headphones },
+  { value: '0%', label: 'Lãi suất trả góp', icon: CreditCard },
+  { value: '3 Năm', label: 'Bảo hành chính hãng', icon: Shield },
 ];
 
 const values = [
@@ -30,14 +30,14 @@ const values = [
   {
     icon: Shield,
     title: 'Bảo hành tận nhà',
-    desc: 'Chính sách bảo hành chính hãng 2 năm, đội ngũ kỹ thuật sẵn sàng đến tận nơi hỗ trợ – không phiền phức, không chờ đợi.',
+    desc: 'Chính sách bảo hành chính hãng lên đến 3 năm, đội ngũ kỹ thuật sẵn sàng đến tận nơi hỗ trợ – không phiền phức, không chờ đợi.',
     color: 'text-blue-600',
     bg: 'bg-blue-50',
   },
   {
     icon: Leaf,
     title: 'Giá cả cạnh tranh',
-    desc: 'Cam kết minh bạch giá niêm yết, không phát sinh chi phí ẩn. Nhiều gói trả góp linh hoạt phù hợp mọi ngân sách.',
+    desc: 'Cam kết minh bạch giá niêm yết, không phát sinh chi phí ẩn. Hỗ trợ thanh toán trực tuyến an toàn và trả góp linh hoạt qua VNPAY.',
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
   },
@@ -78,7 +78,7 @@ const About = () => {
             variants={fadeUp} initial="hidden" animate="visible" custom={2}
             className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
           >
-            Chúng tôi không chỉ bán xe — chúng tôi kiến tạo hành trình xanh cho hàng nghìn gia đình Việt Nam, mỗi ngày, mỗi cây số.
+            Chúng tôi tự hào mang đến giải pháp di chuyển xanh, cung cấp các dòng xe máy điện hiện đại, an toàn và thân thiện với môi trường.
           </motion.p>
         </div>
       </section>
@@ -113,10 +113,10 @@ const About = () => {
               <span className="text-blue-600">Tương lai tươi sáng hơn.</span>
             </h2>
             <p className="text-slate-600 leading-relaxed mb-5">
-              Được thành lập với niềm tin rằng mỗi cá nhân đều có thể góp phần bảo vệ môi trường, <strong>NHẬT.</strong> cam kết cung cấp những chiếc xe điện chất lượng hàng đầu, giá cả minh bạch và dịch vụ hậu mãi tận tâm.
+              Được xây dựng từ đam mê với công nghệ xanh, <strong>NHẬT.</strong> mang đến nền tảng thương mại điện tử hiện đại, giúp khách hàng dễ dàng tiếp cận những mẫu xe điện chất lượng với trải nghiệm mua sắm mượt mà nhất.
             </p>
             <p className="text-slate-600 leading-relaxed mb-8">
-              Tầm nhìn của chúng tôi là trở thành thương hiệu xe điện được yêu thích nhất Việt Nam — nơi khách hàng không chỉ mua xe, mà còn tìm thấy người đồng hành đáng tin cậy trên mọi nẻo đường.
+              Mục tiêu của chúng tôi là phủ xanh đường phố, đồng hành cùng bạn trên mọi nẻo đường với những sản phẩm an toàn, thông minh và thân thiện với môi trường.
             </p>
             <Link
               to="/"
@@ -141,9 +141,9 @@ const About = () => {
             </div>
             {/* Floating badge */}
             <div className="absolute -bottom-5 -right-5 bg-white rounded-2xl shadow-xl px-5 py-3 border border-slate-100">
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Đã phục vụ</p>
-              <p className="text-2xl font-black text-slate-900">10,000+</p>
-              <p className="text-xs text-slate-500">Khách hàng hài lòng</p>
+              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Chất lượng</p>
+              <p className="text-xl font-black text-slate-900">100% Chính hãng</p>
+              <p className="text-xs text-slate-500">Cam kết từ nhà sản xuất</p>
             </div>
           </motion.div>
         </div>

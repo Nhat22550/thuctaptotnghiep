@@ -53,23 +53,49 @@ public class OrderController {
     // 1. Lấy danh sách đơn hàng (FIX LỖI 405)
     // React gọi: GET http://localhost:8900/api/orders
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
+    public ResponseEntity<List<Order>> getAllOrders(
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
+        
+        // Chỉ ADMIN mới được xem toàn bộ danh sách đơn hàng
+        if (headerUserRole == null || !headerUserRole.equals("ROLE_ADMIN")) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         List<Order> orders = orderService.getAllOrders();
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     // 1.1 Lấy danh sách đơn hàng theo User ID
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<List<Order>> getOrdersByUserId(
+            @PathVariable("userId") Long userId,
+            @RequestHeader(value = "X-User-Id", required = false) String headerUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
+        
+        // Lỗi IDOR Fix: Chỉ cho phép ADMIN hoặc đúng User đó mới được xem
+        if (headerUserRole == null || (!headerUserRole.equals("ROLE_ADMIN") && !String.valueOf(userId).equals(headerUserId))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         List<Order> orders = orderService.getOrdersByUserId(userId);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     // 1.2 Lấy chi tiết một đơn hàng theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id) {
+    public ResponseEntity<Order> getOrderById(
+            @PathVariable("id") Long id,
+            @RequestHeader(value = "X-User-Id", required = false) String headerUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
+        
         Order order = orderService.getOrderById(id);
         if (order != null) {
+            // Lỗi IDOR Fix
+            if (headerUserRole != null && !headerUserRole.equals("ROLE_ADMIN")) {
+                if (order.getUser() == null || !String.valueOf(order.getUser().getId()).equals(headerUserId)) {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
             return new ResponseEntity<>(order, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -78,7 +104,10 @@ public class OrderController {
     // 2. Thêm đơn hàng mới
     // React gọi: POST http://localhost:8900/api/orders
     @PostMapping
-    public ResponseEntity<Order> saveOrderDirectly(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Order> saveOrderDirectly(
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "X-User-Id", required = false) String headerUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
         try {
             Order order = new Order();
             order.setOrderedDate(LocalDate.now());
@@ -112,8 +141,16 @@ public class OrderController {
             // Gắn user nếu có userId
             if (payload.containsKey("userId")) {
                 try {
-                    Long userId = Long.valueOf(payload.get("userId").toString());
-                    User user = userClient.getUserById(userId);
+                    Long payloadUserId = Long.valueOf(payload.get("userId").toString());
+                    
+                    // IDOR Fix: Không cho phép tạo đơn hàng dùm người khác
+                    if (headerUserRole != null && !headerUserRole.equals("ROLE_ADMIN")) {
+                        if (!String.valueOf(payloadUserId).equals(headerUserId)) {
+                            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                        }
+                    }
+
+                    User user = userClient.getUserById(payloadUserId);
                     if (user != null) {
                         User managedUser = userRepository.save(user);
                         order.setUser(managedUser);
@@ -289,8 +326,22 @@ public class OrderController {
 
     // 4. Cập nhật thông tin đơn hàng
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id") Long id, @RequestBody Order orderDetails) {
+    public ResponseEntity<Order> updateOrder(
+            @PathVariable("id") Long id, 
+            @RequestBody Order orderDetails,
+            @RequestHeader(value = "X-User-Id", required = false) String headerUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
         try {
+            Order existingOrder = orderService.getOrderById(id);
+            if (existingOrder == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            // IDOR Fix
+            if (headerUserRole != null && !headerUserRole.equals("ROLE_ADMIN")) {
+                if (existingOrder.getUser() == null || !String.valueOf(existingOrder.getUser().getId()).equals(headerUserId)) {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
+
             Order updatedOrder = orderService.updateOrder(id, orderDetails);
             if (updatedOrder != null) {
                 return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
@@ -304,8 +355,21 @@ public class OrderController {
 
     // 5. Xóa đơn hàng
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteOrder(
+            @PathVariable("id") Long id,
+            @RequestHeader(value = "X-User-Id", required = false) String headerUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
         try {
+            Order existingOrder = orderService.getOrderById(id);
+            if (existingOrder == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            // IDOR Fix
+            if (headerUserRole != null && !headerUserRole.equals("ROLE_ADMIN")) {
+                if (existingOrder.getUser() == null || !String.valueOf(existingOrder.getUser().getId()).equals(headerUserId)) {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            }
+
             orderService.deleteOrder(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
@@ -316,11 +380,21 @@ public class OrderController {
 
     // 6. Xuất hóa đơn PDF
     @GetMapping("/{id}/invoice")
-    public ResponseEntity<byte[]> downloadInvoice(@PathVariable("id") Long id) {
+    public ResponseEntity<byte[]> downloadInvoice(
+            @PathVariable("id") Long id,
+            @RequestHeader(value = "X-User-Id", required = false) String headerUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String headerUserRole) {
         try {
             Order order = orderService.getOrderById(id);
             if (order == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // IDOR Fix
+            if (headerUserRole != null && !headerUserRole.equals("ROLE_ADMIN")) {
+                if (order.getUser() == null || !String.valueOf(order.getUser().getId()).equals(headerUserId)) {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
             }
 
             byte[] pdfBytes = pdfGenerationService.generateInvoicePdf(order);
